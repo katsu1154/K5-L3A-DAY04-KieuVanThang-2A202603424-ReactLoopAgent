@@ -26,6 +26,13 @@ class ScenarioTests(unittest.TestCase):
 
 
 class EvidenceGateTests(unittest.TestCase):
+    def test_system_prompt_discloses_historical_search_limits(self):
+        fake = FakeProvider([final()])
+        run_agent('Liệt kê incident của năm 2025', fake, StatusTools())
+        system_prompt = ' '.join(fake.histories[0][0]['content'].split())
+        self.assertIn('không tìm thấy không chứng minh incident không tồn tại', system_prompt)
+        self.assertIn('không đủ dữ liệu để xác nhận', system_prompt)
+
     def test_missing_url_gets_revision_within_budget(self):
         url = 'https://stspg.io/pjgptg3cfc6n'
         fake = FakeProvider([tool_call('1', 'get_incident_details', '{"provider":"github","incident_id":"xr3myzj7ms51"}'),
